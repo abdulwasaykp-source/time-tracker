@@ -69,7 +69,7 @@ pipeline {
                         -p 8081:8080 \
                         ${DOCKER_IMAGE}:${DOCKER_TAG}
 
-                        echo "Applications deployed  successfully with tomcat."
+                        echo "Applications deployed  successfully ."
                         echo "URL: http://192.168.18.97:8081/time-tracker/"  
                   '''
             }
