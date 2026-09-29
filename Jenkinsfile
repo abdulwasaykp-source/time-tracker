@@ -34,9 +34,17 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                echo 'WAR build successful. Ready for Docker/Tomcat deployment.'
-            }
-        }
+    steps {
+        sh '''
+            docker rm -f time-tracker-app || true
+
+            docker run -d \
+              --name time-tracker-app \
+              -p 8081:8080 \
+              -v "$WORKSPACE/web/target/time-tracker-web-0.5.0-SNAPSHOT.war:/usr/local/tomcat/webapps/time-tracker.war" \
+              tomcat:9.0
+        '''
+          }
+       }
     }
 }
