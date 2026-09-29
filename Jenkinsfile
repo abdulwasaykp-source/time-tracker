@@ -43,7 +43,7 @@ pipeline {
               -v /var/lib/docker/volumes/jenkins_home/_data/workspace/2nd-pipline/web/target/time-tracker-web-0.5.0-SNAPSHOT.war:/usr/local/tomcat/webapps/time-tracker.war \
               tomcat:9.0
 
-            echo "Application deployed successfully."
+            echo "Applications deployed successfully."
             echo "URL: http://192.168.18.97:8081/time-tracker/"
         '''
          }
