@@ -1,8 +1,11 @@
+```groovy
 pipeline {
+
     agent any
 
     environment {
-        MAVEN_OPTS = '--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+        DOCKER_IMAGE = "abdulwasaykp/time-tracker"
+        DOCKER_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -23,30 +26,63 @@ pipeline {
             }
         }
 
-        stage('Verify WAR') {
+        stage('Docker Build') {
             steps {
                 sh '''
-                    echo "Checking generated WAR file..."
-                    ls -lh web/target/
-                    test -f web/target/time-tracker-web-0.5.0-SNAPSHOT.war
+                    docker build \
+                        -t ${DOCKER_IMAGE}:${DOCKER_TAG} \
+                        -t ${DOCKER_IMAGE}:latest .
                 '''
             }
         }
-       stage('Deploy') {
-          steps {
-              sh '''
-            docker rm -f time-tracker-app || true
 
-            docker run -d \
-              --name time-tracker-app \
-              -p 8081:8080 \
-              -v /var/lib/docker/volumes/jenkins_home/_data/workspace/2nd-pipline/web/target/time-tracker-web-0.5.0-SNAPSHOT.war:/usr/local/tomcat/webapps/time-tracker.war \
-              tomcat:9.0
+        stage('Docker Hub Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhubcred',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login \
+                            -u "$DOCKER_USERNAME" \
+                            --password-stdin
 
-            echo "Applications deployed successfully."
-            echo "URL: http://192.168.18.97:8081/time-tracker/"
-        '''
-         }
-      }
+                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker push ${DOCKER_IMAGE}:latest
+
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Pull') {
+            steps {
+                sh '''
+                    docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    docker rm -f time-tracker-app || true
+
+                    docker run -d \
+                        --name time-tracker-app \
+                        -p 8081:8080 \
+                        ${DOCKER_IMAGE}:${DOCKER_TAG}
+
+                        echo "Applications deployed successfully."
+                        echo "URL: http://192.168.18.97:8081/time-tracker/"  
+                  '''
+            }
+        }
     }
 }
+```
+
