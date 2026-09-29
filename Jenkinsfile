@@ -32,8 +32,7 @@ pipeline {
                 '''
             }
         }
-
-        stage('Deploy') {
+stage('Deploy') {
     steps {
         sh '''
             docker rm -f time-tracker-app || true
@@ -44,7 +43,7 @@ pipeline {
               -v "$WORKSPACE/web/target/time-tracker-web-0.5.0-SNAPSHOT.war:/usr/local/tomcat/webapps/time-tracker.war" \
               tomcat:9.0
         '''
-          }
+         }
        }
     }
 }
