@@ -9,13 +9,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'master',
-                    url: 'https://github.com/abdulwasaykp-source/time-tracker.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 sh '''
