@@ -59,16 +59,18 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                    docker rm -f time-tracker-app || true
-
+        stage('Deploy to Ubuntu') {
+    steps {
+        sshagent(['ubuntu-deploy-key']) {
+            sh '''
+                ssh -o StrictHostKeyChecking=no osboxes@192.168.18.179 "
+                    docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} &&
+                    docker rm -f time-tracker-app || true &&
                     docker run -d \
                         --name time-tracker-app \
                         -p 8081:8080 \
                         ${DOCKER_IMAGE}:${DOCKER_TAG}
-
+                "
                         echo "Applications deployed  successfully with tomcat."
                         echo "URL: http://192.168.18.97:8081/time-tracker/"  
                   '''
