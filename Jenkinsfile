@@ -64,7 +64,7 @@ pipeline {
                         ${DOCKER_IMAGE}:${DOCKER_TAG}
                 "
                         echo "Applications deployed  successfully with tomcat."
-                        echo "URL: http://192.168.18.97:8081/time-tracker/"  
+                        echo "URL: http://192.168.18.179:8081/time-tracker/"  
                   '''
                 }
             }
