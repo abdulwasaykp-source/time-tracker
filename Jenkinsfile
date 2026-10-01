@@ -51,14 +51,6 @@ pipeline {
             }
         }
 
-        stage('Docker Pull') {
-            steps {
-                sh '''
-                    docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
-                '''
-            }
-        }
-
         stage('Deploy to Ubuntu') {
     steps {
         sshagent(['ubuntu-deploy-key']) {
