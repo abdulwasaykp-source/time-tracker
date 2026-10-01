@@ -74,6 +74,7 @@ pipeline {
                         echo "Applications deployed  successfully with tomcat."
                         echo "URL: http://192.168.18.97:8081/time-tracker/"  
                   '''
+                }
             }
         }
     }
